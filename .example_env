@@ -1,1 +1,2 @@
 SECRET_KEY=""
+AUTH0_API_URL=""
