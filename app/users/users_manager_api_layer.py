@@ -12,8 +12,8 @@ from app.users.user_manager_exceptions import (
 
 
 class UserManagerApiLayer:
-    def __init__(self, api_url: str):
-        self._api_url = api_url
+    def __init__(self, auth_url: str):
+        self._api_url = f"{auth_url}/api/v2"
         self._base_headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json'

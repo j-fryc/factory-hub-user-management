@@ -10,7 +10,7 @@ class UserManager:
     def __init__(self, settings: Settings):
         self._settings = settings
         self._api_layer = UserManagerApiLayer(
-            api_url=self._settings.auth0_api_url
+            auth_url=self._settings.auth0_url
         )
 
     async def get_users(self, auth_token: str, query_parameters: Optional[SearchableFields] = None):
