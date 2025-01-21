@@ -1,3 +1,5 @@
+from typing import Dict
+
 import httpx
 
 from app.auth.auth_exceptions import JWKSClientException
@@ -7,7 +9,7 @@ class JWKSClient:
     def __init__(self, auth_url: str):
         self._jwks_url = f"{auth_url}/.well-known/jwks.json"
 
-    async def get_jwks(self):
+    async def get_jwks(self) -> Dict:
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.get(self._jwks_url)

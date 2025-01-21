@@ -8,7 +8,7 @@ class AuthTokenVerifier:
     def __init__(self, jwks_client: JWKSClient):
         self._jwks_client = jwks_client
 
-    async def verify_token(self, token_cookie: str):
+    async def verify_token(self, token_cookie: str) -> None:
         try:
             jwks = await self._jwks_client.get_jwks()
             claims = jwt.decode(

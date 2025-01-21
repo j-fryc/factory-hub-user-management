@@ -24,7 +24,7 @@ class AuthTokenFetcher:
             "api_url": f"{self._auth0_url}/oauth/token"
         }
 
-    async def get_token(self):
+    async def get_token(self) -> str:
         request_data = self._prepare_request_data()
         async with httpx.AsyncClient() as client:
             try:

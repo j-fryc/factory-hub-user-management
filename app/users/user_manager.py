@@ -1,4 +1,6 @@
-from typing import Optional
+from typing import Optional, Union
+
+import httpx
 from fastapi import Request
 
 from app.users.schemas import SearchableFields, UserFields, UserUpdatingFields
@@ -13,7 +15,11 @@ class UserManager:
             auth_url=self._settings.auth0_url
         )
 
-    async def get_users(self, auth_token: str, query_parameters: Optional[SearchableFields] = None):
+    async def get_users(
+            self,
+            auth_token: str,
+            query_parameters: Optional[SearchableFields] = None
+    ) -> Union[httpx.Response, list]:
         users = await self._api_layer.make_request(
             method="GET",
             endpoint='/users',
@@ -22,7 +28,11 @@ class UserManager:
         )
         return users
 
-    async def delete_user(self, auth_token: str, user_id: str):
+    async def delete_user(
+            self,
+            auth_token: str,
+            user_id: str
+    ) -> list:
         deleted_users = await self._api_layer.make_request(
             method="DELETE",
             endpoint=f'/users/{user_id}',
@@ -30,7 +40,12 @@ class UserManager:
         )
         return deleted_users
 
-    async def update_user(self, auth_token: str, user_id: str, updating_fields: UserUpdatingFields):
+    async def update_user(
+            self,
+            auth_token: str,
+            user_id: str,
+            updating_fields: UserUpdatingFields
+    ) -> Union[httpx.Response, list]:
         updated_users = await self._api_layer.make_request(
             method="PATCH",
             endpoint=f'/users/{user_id}',
@@ -39,7 +54,11 @@ class UserManager:
         )
         return updated_users
 
-    async def create_user(self, auth_token: str, user_fields: UserFields):
+    async def create_user(
+            self,
+            auth_token: str,
+            user_fields: UserFields
+    ) -> Union[httpx.Response, list]:
         created_users = await self._api_layer.make_request(
             method="POST",
             endpoint='/users',

@@ -22,36 +22,21 @@ async def create_user(
         token_handler: AuthTokenManager = Depends(get_auth_manager_service),
         user_manager_service: UserManager = Depends(get_user_manager_service),
 ):
-    if not await token_handler.token:
-        raise HTTPException(
-            status_code=401,
-            detail="Token missing"
-        )
     try:
         users = await user_manager_service.create_user(
             auth_token=await token_handler.token,
             user_fields=user_fields
         )
         return users
-    except ServiceUnavailableException:
-        raise HTTPException(
-            status_code=503,
-            detail="Service unavailable"
-        )
-    except BadRequestException as e:
+    except (BadRequestException, ConflictException) as e:
         raise HTTPException(
             status_code=400,
             detail=str(e)
         )
-    except ConflictException as e:
+    except (ServiceUnavailableException, UserManagerException):
         raise HTTPException(
-            status_code=409,
-            detail=str(e)
-        )
-    except UserManagerException as e:
-        raise HTTPException(
-            status_code=503,
-            detail=f"Unexpected error: {str(e)}"
+            status_code=500,
+            detail="Service unavailable"
         )
 
 
@@ -60,11 +45,6 @@ async def delete_user(
         token_handler: AuthTokenManager = Depends(get_auth_manager_service),
         user_manager_service: UserManager = Depends(get_user_manager_service)
 ):
-    if not await token_handler.token:
-        raise HTTPException(
-            status_code=401,
-            detail="Token missing"
-        )
     try:
         users = await user_manager_service.delete_user(
             auth_token=await token_handler.token,
@@ -76,15 +56,10 @@ async def delete_user(
             status_code=400,
             detail=str(e)
         )
-    except ServiceUnavailableException:
+    except (ServiceUnavailableException, UserManagerException):
         raise HTTPException(
-            status_code=503,
+            status_code=500,
             detail="Service unavailable"
-        )
-    except UserManagerException as e:
-        raise HTTPException(
-            status_code=503,
-            detail=f"Token verification failed: {e}",
         )
 
 
@@ -94,11 +69,6 @@ async def update_user(
         token_handler: AuthTokenManager = Depends(get_auth_manager_service),
         user_manager_service: UserManager = Depends(get_user_manager_service)
 ):
-    if not await token_handler.token:
-        raise HTTPException(
-            status_code=401,
-            detail="Token missing"
-        )
     try:
         users = await user_manager_service.update_user(
             auth_token=await token_handler.token,
@@ -106,25 +76,15 @@ async def update_user(
             updating_fields=updating_fields
         )
         return users
-    except NotFoundException as e:
-        raise HTTPException(
-            status_code=404,
-            detail=str(e)
-        )
-    except ServiceUnavailableException:
-        raise HTTPException(
-            status_code=503,
-            detail="Service unavailable"
-        )
-    except BadRequestException as e:
+    except (NotFoundException, BadRequestException) as e:
         raise HTTPException(
             status_code=400,
             detail=str(e)
         )
-    except UserManagerException as e:
+    except (ServiceUnavailableException, UserManagerException):
         raise HTTPException(
-            status_code=503,
-            detail=f"Unexpected error: {str(e)}"
+            status_code=500,
+            detail="Service unavailable"
         )
 
 
@@ -134,32 +94,20 @@ async def get_users(
         token_handler: AuthTokenManager = Depends(get_auth_manager_service),
         user_manager_service: UserManager = Depends(get_user_manager_service)
 ):
-    if not await token_handler.token:
-        raise HTTPException(status_code=401, detail="Token missing")
     try:
         users = await user_manager_service.get_users(
             auth_token=await token_handler.token,
             query_parameters=query_parameters
         )
         return users
-    except NotFoundException as e:
-        raise HTTPException(
-            status_code=404,
-            detail=str(e)
-        )
-    except ServiceUnavailableException:
-        raise HTTPException(
-            status_code=503,
-            detail="Service unavailable"
-        )
-    except BadRequestException as e:
+    except (NotFoundException, BadRequestException) as e:
         raise HTTPException(
             status_code=400,
             detail=str(e)
         )
-    except UserManagerException as e:
+    except (ServiceUnavailableException, UserManagerException):
         raise HTTPException(
-            status_code=503,
-            detail=f"Unexpected error: {str(e)}"
+            status_code=500,
+            detail="Service unavailable"
         )
 
