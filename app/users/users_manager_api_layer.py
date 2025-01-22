@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any, Union
+from typing import Optional, Dict, Any
 
 import httpx
 
@@ -38,7 +38,7 @@ class UserManagerApiLayer:
             auth_token: str,
             params: Optional[Dict[str, Any]] = None,
             content: Optional[str] = None,
-    ) -> Union[httpx.Response, list]:
+    ) -> Dict | None:
         url = f"{self._api_url}{endpoint}"
         headers = self._get_headers(auth_token)
         async with httpx.AsyncClient() as client:
@@ -51,9 +51,7 @@ class UserManagerApiLayer:
                     content=content,
                 )
                 response.raise_for_status()
-                if response.status_code == '204':
-                    return []
-                return response.json()
+                return response.json() if response.status_code != 204 else None
             except httpx.RequestError as e:
                 raise self._exceptions_dict['default'](e)
             except httpx.HTTPStatusError as e:

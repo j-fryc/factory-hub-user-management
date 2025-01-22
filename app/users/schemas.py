@@ -1,50 +1,50 @@
 from collections import OrderedDict
 
 from pydantic import BaseModel, Field, EmailStr, HttpUrl
-from typing import Optional, Dict, List
+from fastapi import Query
+from typing import Optional, Dict, List, Literal
 
 
-class BaseUserModel(BaseModel):
-    blocked: Optional[bool] = Field(default=None, description="Indicates if the user is blocked")
-    email_verified: Optional[bool] = Field(default=None, description="Indicates if the email is verified")
-    phone_number: Optional[str] = Field(default=None, description="User's phone number")
-    phone_verified: Optional[bool] = Field(default=None, description="Indicates if the phone number is verified")
-    given_name: Optional[str] = Field(default=None, description="User's given name")
-    family_name: Optional[str] = Field(default=None, description="User's family name")
-    name: Optional[str] = Field(default=None, description="User's full name")
-    nickname: Optional[str] = Field(default=None, description="User's nickname")
+class CreateUserFields(BaseModel):
+    connection: Literal['Username-Password-Authentication'] = Field(
+        default='Username-Password-Authentication',
+        description="Connection type for the user"
+    )
+    email: EmailStr = Field(..., description="User's email address")
+    password: str = Field(..., description="User's password")
+    given_name: str = Field(..., description="User's given name")
+    family_name: str = Field(..., description="User's family name")
     picture: Optional[str] = Field(default=None, description="URL to the user's profile picture")
 
 
-class UserFields(BaseUserModel):
-    email: EmailStr = Field(..., description="User's email address")
-    password: str = Field(..., description="User's password")
-    connection: Optional[str] = Field(default='Username-Password-Authentication', description="Connection type for the user")
-    user_metadata: Optional[Dict] = Field(default=None, description="Custom metadata for the user")
-    app_metadata: Optional[Dict] = Field(default=None, description="Application-specific metadata")
-    verify_email: Optional[bool] = Field(default=None, description="Should the email be verified?")
-    verify_phone_number: Optional[bool] = Field(default=None, description="Should the phone number be verified?")
-    client_id: Optional[str] = Field(default=None, description="Client ID associated with the user")
-    username: Optional[str] = Field(default=None, description="Username for the user")
-
-
-class UserUpdatingFields(UserFields):
+class UpdateUserFields(BaseModel):
     email: Optional[EmailStr] = Field(default=None, description="User's email address")
     password: Optional[str] = Field(default=None, description="User's password")
+    given_name: Optional[str] = Field(default=None, description="User's given name")
+    family_name: Optional[str] = Field(default=None, description="User's family name")
+    email_verified: Optional[bool] = Field(default=None, description="Indicates if the email is verified")
+    phone_verified: Optional[bool] = Field(default=None, description="Indicates if the phone number is verified")
+    picture: Optional[str] = Field(default=None, description="URL to the user's profile picture")
 
 
-class SearchableFields(BaseUserModel):
-    user_id: Optional[str] = Field(default=None, description="Unique user ID")
-    email: Optional[EmailStr] = Field(default=None, description="User's email address")
-    logins_count: Optional[int] = Field(default=None, description="Number of logins")
-    created_at: Optional[str] = Field(default=None, description="Creation timestamp")
-    updated_at: Optional[str] = Field(default=None, description="Update timestamp")
-    last_login: Optional[str] = Field(default=None, description="Last login timestamp")
-    last_ip: Optional[str] = Field(default=None, description="Last IP address used")
-    email_domain: Optional[str] = Field(default=None, description="Domain of the email address")
-    organization_id: Optional[str] = Field(default=None, description="Organization ID associated with the user")
+class SearchableUserFields(BaseModel):
+    user_id: Optional[str] = Query(default=None, description="Unique user ID")
+    email: Optional[EmailStr] = Query(default=None, description="User's email address")
+    logins_count: Optional[int] = Query(default=None, description="Number of logins")
+    created_at: Optional[str] = Query(default=None, description="Creation timestamp")
+    updated_at: Optional[str] = Query(default=None, description="Update timestamp")
+    last_login: Optional[str] = Query(default=None, description="Last login timestamp")
+    last_ip: Optional[str] = Query(default=None, description="Last IP address used")
+    email_domain: Optional[str] = Query(default=None, description="Domain of the email address")
+    organization_id: Optional[str] = Query(default=None, description="Organization ID associated with the user")
+    name: Optional[str] = Query(default=None, description="User's full name")
+    blocked: Optional[bool] = Query(default=None, description="Indicates if the user is blocked")
+    email_verified: Optional[bool] = Query(default=None, description="Indicates if the email is verified")
+    given_name: Optional[str] = Query(default=None, description="User's given name")
+    family_name: Optional[str] = Query(default=None, description="User's family name")
+    picture: Optional[str] = Query(default=None, description="URL to the user's profile picture")
 
-    def to_query_params(self) -> dict:
+    def to_query_params(self) -> Dict:
         ordered_dict = OrderedDict()
         base_dict = self.dict(exclude_none=True)
         ordered_dict['include_fields'] = 'true'
@@ -63,7 +63,7 @@ class Identity(BaseModel):
     isSocial: bool = Field(..., description="Indicates whether the identity is social")
 
 
-class UserManagerResponse(BaseModel):
+class UserFields(BaseModel):
     created_at: str = Field(..., description="Timestamp when the user was created")
     email: EmailStr = Field(..., description="User's email address")
     email_verified: bool = Field(..., description="Indicates whether the email is verified")
