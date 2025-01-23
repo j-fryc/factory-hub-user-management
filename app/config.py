@@ -5,12 +5,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     secret_key: str
-    # auth0_client_id: str
-    # auth0_client_secret: str
-    # auth0_domain: str
-    # auth0_audience: str
+    auth0_url: str
+    auth0_client_id: str
+    auth0_client_secret: str
 
-    model_config = SettingsConfigDict(env_file="../.env")
+    model_config = SettingsConfigDict(env_file="../../.env")
 
 
 @lru_cache
