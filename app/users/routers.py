@@ -13,7 +13,7 @@ from app.utils.api_layer_exceptions import (
 )
 from app.auth.auth_token_manager import get_auth_manager_service, AuthTokenManager
 
-router = APIRouter(prefix="/v1/users")
+router = APIRouter(prefix="/api/v1/users")
 
 
 @router.post("/")
