@@ -28,21 +28,12 @@ class UpdateUserFields(BaseModel):
 
 
 class SearchableUserFields(BaseModel):
-    user_id: Optional[str] = Query(default=None, description="Unique user ID")
     email: Optional[EmailStr] = Query(default=None, description="User's email address")
-    logins_count: Optional[int] = Query(default=None, description="Number of logins")
     created_at: Optional[str] = Query(default=None, description="Creation timestamp")
-    updated_at: Optional[str] = Query(default=None, description="Update timestamp")
-    last_login: Optional[str] = Query(default=None, description="Last login timestamp")
-    last_ip: Optional[str] = Query(default=None, description="Last IP address used")
-    email_domain: Optional[str] = Query(default=None, description="Domain of the email address")
     organization_id: Optional[str] = Query(default=None, description="Organization ID associated with the user")
     name: Optional[str] = Query(default=None, description="User's full name")
-    blocked: Optional[bool] = Query(default=None, description="Indicates if the user is blocked")
-    email_verified: Optional[bool] = Query(default=None, description="Indicates if the email is verified")
     given_name: Optional[str] = Query(default=None, description="User's given name")
     family_name: Optional[str] = Query(default=None, description="User's family name")
-    picture: Optional[str] = Query(default=None, description="URL to the user's profile picture")
 
     def to_query_params(self) -> Dict:
         ordered_dict = OrderedDict()

@@ -4,8 +4,8 @@ from fastapi.responses import JSONResponse, Response
 
 from app.users.schemas import CreateUserFields, UpdateUserFields, SearchableUserFields
 from app.users.user_manager import UserManager, get_user_manager_service
-from app.users.user_manager_exceptions import (
-    UserManagerException,
+from app.utils.api_layer_exceptions import (
+    BaseApiException,
     NotFoundException,
     ConflictException,
     ServiceUnavailableException,
@@ -13,10 +13,10 @@ from app.users.user_manager_exceptions import (
 )
 from app.auth.auth_token_manager import get_auth_manager_service, AuthTokenManager
 
-router = APIRouter(prefix="/users")
+router = APIRouter(prefix="/v1/users")
 
 
-@router.post("/create")
+@router.post("/")
 async def create_user(
         user_fields: CreateUserFields,
         token_handler: AuthTokenManager = Depends(get_auth_manager_service),
@@ -34,14 +34,14 @@ async def create_user(
             status_code=400,
             detail=str(e)
         )
-    except (ServiceUnavailableException, UserManagerException):
+    except (ServiceUnavailableException, BaseApiException):
         raise HTTPException(
             status_code=500,
             detail="Service unavailable"
         )
 
 
-@router.delete("/delete/{user_id}")
+@router.delete("/{user_id}")
 async def delete_user(
         user_id: str,
         token_handler: AuthTokenManager = Depends(get_auth_manager_service),
@@ -58,14 +58,14 @@ async def delete_user(
             status_code=400,
             detail=str(e)
         )
-    except (ServiceUnavailableException, UserManagerException):
+    except (ServiceUnavailableException, BaseApiException):
         raise HTTPException(
             status_code=500,
             detail="Service unavailable"
         )
 
 
-@router.patch("/update/{user_id}")
+@router.patch("/{user_id}")
 async def update_user(
         user_id: str,
         updating_fields: UpdateUserFields,
@@ -85,18 +85,18 @@ async def update_user(
             status_code=400,
             detail=str(e)
         )
-    except (ServiceUnavailableException, UserManagerException):
+    except (ServiceUnavailableException, BaseApiException):
         raise HTTPException(
             status_code=500,
             detail="Service unavailable"
         )
 
 
-@router.get("/get")
+@router.get("/")
 async def get_users(
         query_parameters: SearchableUserFields = Depends(),
         token_handler: AuthTokenManager = Depends(get_auth_manager_service),
-        user_manager_service: UserManager = Depends(get_user_manager_service)
+        user_manager_service: UserManager = Depends(get_user_manager_service),
 ):
     try:
         users_data = await user_manager_service.get_users(
@@ -110,7 +110,7 @@ async def get_users(
             status_code=400,
             detail=str(e)
         )
-    except (ServiceUnavailableException, UserManagerException):
+    except (ServiceUnavailableException, BaseApiException):
         raise HTTPException(
             status_code=500,
             detail="Service unavailable"
