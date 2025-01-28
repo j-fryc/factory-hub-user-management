@@ -8,6 +8,9 @@ from app.auth.jwks_fetcher import JWKSClient
 from app.config import get_settings
 from app.users.user_manager import UserManager
 from app.users.routers import router as user_router
+from app.organizations.routers import router as organization_router
+from app.organizations.organization_manager import OrganizationManager
+
 
 app = FastAPI()
 
@@ -25,6 +28,9 @@ async def startup():
     user_manager = UserManager(
         settings=settings,
     )
+    organization_manager = OrganizationManager(
+        settings=settings,
+    )
     token_handler = await AuthTokenManager.create(
         fetcher_service=AuthTokenFetcher(settings=settings),
         verifier_service=AuthTokenVerifier(
@@ -32,6 +38,8 @@ async def startup():
         )
     )
     app.state.user_manager = user_manager
+    app.state.organization_manager = organization_manager
     app.state.token_handler = token_handler
 
 app.include_router(user_router)
+app.include_router(organization_router)
