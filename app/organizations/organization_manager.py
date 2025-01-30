@@ -17,7 +17,7 @@ class OrganizationManager:
             self,
             auth_token: str,
             sort_parameter: SortParameters = None,
-    ) -> list[OrganizationFields]:
+    ) -> list[OrganizationFields] | list:
         organizations_data = await self._api_layer.make_request(
             method="GET",
             endpoint='/organizations',
@@ -89,46 +89,6 @@ class OrganizationManager:
             auth_token=auth_token,
             content=members_list.model_dump_json(exclude_none=True)
         )
-
-    ## to be continued after developing api to handel roles endpoints
-    # async def assign_user_roles_in_organization(
-    #         self,
-    #         auth_token: str,
-    #         user_fields: CreateUserFields
-    # ) -> UserFields:
-    #     created_user_data = await self._api_layer.make_request(
-    #         method="POST",
-    #         endpoint='/users',
-    #         auth_token=auth_token,
-    #         content=user_fields.model_dump_json(exclude_none=True)
-    #     )
-    #     return UserFields(**created_user_data)
-    #
-    # async def delete_user_roles_in_organization(
-    #         self,
-    #         auth_token: str,
-    #         user_fields: CreateUserFields
-    # ) -> UserFields:
-    #     created_user_data = await self._api_layer.make_request(
-    #         method="POST",
-    #         endpoint='/users',
-    #         auth_token=auth_token,
-    #         content=user_fields.model_dump_json(exclude_none=True)
-    #     )
-    #     return UserFields(**created_user_data)
-    #
-    # async def get_user_roles_in_organization(
-    #         self,
-    #         auth_token: str,
-    #         user_fields: CreateUserFields
-    # ) -> UserFields:
-    #     created_user_data = await self._api_layer.make_request(
-    #         method="POST",
-    #         endpoint='/users',
-    #         auth_token=auth_token,
-    #         content=user_fields.model_dump_json(exclude_none=True)
-    #     )
-    #     return UserFields(**created_user_data)
 
 
 def get_organization_manager_service(request: Request) -> OrganizationManager:
