@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi import Request
 
 from app.roles.roles_manager_api_layer import RoleManagerApiLayer
-from app.roles.schemas import RoleFields, CreateRoleFields, UpdateRoleFields, OrganizationUserRolesFields
+from app.roles.schemas import RoleFields, CreateRoleFields, UpdateRoleFields
 from app.config import Settings
 
 
@@ -64,47 +64,6 @@ class RoleManager:
             content=role_fields.model_dump_json(exclude_none=True)
         )
         return RoleFields(**created_role_data)
-
-    async def assign_user_roles_in_organization(
-            self,
-            auth_token: str,
-            organization_id: str,
-            user_id: str,
-            members_roles_fields: OrganizationUserRolesFields
-    ) -> None:
-        await self._api_layer.make_request(
-            method="POST",
-            endpoint=f'/organizations/{organization_id}/members/{user_id}/roles',
-            auth_token=auth_token,
-            content=members_roles_fields.model_dump_json(exclude_none=True)
-        )
-
-    async def delete_user_roles_in_organization(
-            self,
-            auth_token: str,
-            organization_id: str,
-            user_id: str,
-            members_roles_fields: OrganizationUserRolesFields
-    ) -> None:
-        await self._api_layer.make_request(
-            method="DELETE",
-            endpoint=f'/organizations/{organization_id}/members/{user_id}/roles',
-            auth_token=auth_token,
-            content=members_roles_fields.model_dump_json(exclude_none=True)
-        )
-
-    async def get_user_roles_in_organization(
-            self,
-            auth_token: str,
-            organization_id: str,
-            user_id: str
-    ) -> list[RoleFields] | list:
-        organization_user_roles = await self._api_layer.make_request(
-            method="GET",
-            endpoint=f'/organizations/{organization_id}/members/{user_id}/roles',
-            auth_token=auth_token,
-        )
-        return [RoleFields(**organization_user_role) for organization_user_role in organization_user_roles]
 
 
 def get_role_manager_service(request: Request) -> RoleManager:

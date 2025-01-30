@@ -4,6 +4,7 @@ from app.organizations.organization_manager_api_layer import OrganizationManager
 from app.organizations.schemas import SortParameters, OrganizationFields, UpdateOrganizationFields, \
     CreateOrganizationFields, AddDeleteMembersFields
 from app.config import Settings
+from app.roles.schemas import RoleFields, UserRolesFields
 
 
 class OrganizationManager:
@@ -89,6 +90,47 @@ class OrganizationManager:
             auth_token=auth_token,
             content=members_list.model_dump_json(exclude_none=True)
         )
+
+    async def assign_user_roles_in_organization(
+            self,
+            auth_token: str,
+            organization_id: str,
+            user_id: str,
+            members_roles_fields: UserRolesFields
+    ) -> None:
+        await self._api_layer.make_request(
+            method="POST",
+            endpoint=f'/organizations/{organization_id}/members/{user_id}/roles',
+            auth_token=auth_token,
+            content=members_roles_fields.model_dump_json(exclude_none=True)
+        )
+
+    async def delete_user_roles_in_organization(
+            self,
+            auth_token: str,
+            organization_id: str,
+            user_id: str,
+            members_roles_fields: UserRolesFields
+    ) -> None:
+        await self._api_layer.make_request(
+            method="DELETE",
+            endpoint=f'/organizations/{organization_id}/members/{user_id}/roles',
+            auth_token=auth_token,
+            content=members_roles_fields.model_dump_json(exclude_none=True)
+        )
+
+    async def get_user_roles_in_organization(
+            self,
+            auth_token: str,
+            organization_id: str,
+            user_id: str
+    ) -> list[RoleFields] | list:
+        organization_user_roles = await self._api_layer.make_request(
+            method="GET",
+            endpoint=f'/organizations/{organization_id}/members/{user_id}/roles',
+            auth_token=auth_token,
+        )
+        return [RoleFields(**organization_user_role) for organization_user_role in organization_user_roles]
 
 
 def get_organization_manager_service(request: Request) -> OrganizationManager:

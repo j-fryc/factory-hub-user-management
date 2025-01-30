@@ -3,7 +3,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse, Response
 
 from app.roles.role_manager import RoleManager, get_role_manager_service
-from app.roles.schemas import CreateRoleFields, UpdateRoleFields, OrganizationUserRolesFields
+from app.roles.schemas import CreateRoleFields, UpdateRoleFields
 from app.utils.api_layer_exceptions import (
     BaseApiException,
     NotFoundException,
@@ -41,7 +41,7 @@ async def create_role(
         )
 
 
-@router.delete("/{user_id}")
+@router.delete("/{role_id}")
 async def delete_role(
         role_id: str,
         token_handler: AuthTokenManager = Depends(get_auth_manager_service),
@@ -105,89 +105,6 @@ async def get_roles(
         )
         json_compatible_data = jsonable_encoder(users_data)
         return JSONResponse(content=json_compatible_data)
-    except (NotFoundException, BadRequestException) as e:
-        raise HTTPException(
-            status_code=400,
-            detail=str(e)
-        )
-    except (ServiceUnavailableException, BaseApiException):
-        raise HTTPException(
-            status_code=500,
-            detail="Service unavailable"
-        )
-
-
-@router.get("/{organization_id}/members/{user_id}")
-async def get_organization_roles(
-        organization_id: str,
-        user_id: str,
-        token_handler: AuthTokenManager = Depends(get_auth_manager_service),
-        organization_manager_service: RoleManager = Depends(get_role_manager_service)
-):
-    try:
-        organizations_roles_data = await organization_manager_service.get_user_roles_in_organization(
-            auth_token=await token_handler.token,
-            organization_id=organization_id,
-            user_id=user_id
-        )
-        json_compatible_data = jsonable_encoder(organizations_roles_data)
-        return JSONResponse(content=json_compatible_data)
-    except (NotFoundException, BadRequestException) as e:
-        raise HTTPException(
-            status_code=400,
-            detail=str(e)
-        )
-    except (ServiceUnavailableException, BaseApiException):
-        raise HTTPException(
-            status_code=500,
-            detail="Service unavailable"
-        )
-
-
-@router.delete("/{organization_id}/members/{user_id}")
-async def delete_users_roles_from_organization_member(
-        organization_id: str,
-        user_id: str,
-        organization_user_fields: OrganizationUserRolesFields,
-        token_handler: AuthTokenManager = Depends(get_auth_manager_service),
-        organization_manager_service: RoleManager = Depends(get_role_manager_service)
-):
-    try:
-        await organization_manager_service.delete_user_roles_in_organization(
-            auth_token=await token_handler.token,
-            organization_id=organization_id,
-            user_id=user_id,
-            members_roles_fields=organization_user_fields
-        )
-        return Response(status_code=204)
-    except (NotFoundException, BadRequestException) as e:
-        raise HTTPException(
-            status_code=400,
-            detail=str(e)
-        )
-    except (ServiceUnavailableException, BaseApiException):
-        raise HTTPException(
-            status_code=500,
-            detail="Service unavailable"
-        )
-
-
-@router.post("/{organization_id}/members/{user_id}")
-async def assign_user_roles_in_organization(
-        organization_id: str,
-        user_id: str,
-        organization_user_fields: OrganizationUserRolesFields,
-        token_handler: AuthTokenManager = Depends(get_auth_manager_service),
-        organization_manager_service: RoleManager = Depends(get_role_manager_service)
-):
-    try:
-        await organization_manager_service.assign_user_roles_in_organization(
-            auth_token=await token_handler.token,
-            organization_id=organization_id,
-            user_id=user_id,
-            members_roles_fields=organization_user_fields
-        )
-        return Response(status_code=204)
     except (NotFoundException, BadRequestException) as e:
         raise HTTPException(
             status_code=400,

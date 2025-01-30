@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse, Response
 from app.auth.auth_token_manager import get_auth_manager_service, AuthTokenManager
 from app.organizations.organization_manager import SortParameters, OrganizationManager, get_organization_manager_service
 from app.organizations.schemas import CreateOrganizationFields, UpdateOrganizationFields, AddDeleteMembersFields
+from app.roles.schemas import UserRolesFields
 from app.utils.api_layer_exceptions import NotFoundException, BaseApiException, ServiceUnavailableException, \
     BadRequestException, ConflictException
 
@@ -150,6 +151,87 @@ async def delete_users_from_organization(
             auth_token=await token_handler.token,
             organization_id=organization_id,
             members_list=members_list
+        )
+        return Response(status_code=204)
+    except (NotFoundException, BadRequestException) as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+    except (ServiceUnavailableException, BaseApiException):
+        raise HTTPException(
+            status_code=500,
+            detail="Service unavailable"
+        )
+
+@router.get("/{organization_id}/members/{user_id}/roles")
+async def get_organization_roles(
+        organization_id: str,
+        user_id: str,
+        token_handler: AuthTokenManager = Depends(get_auth_manager_service),
+        organization_manager_service: OrganizationManager = Depends(get_organization_manager_service)
+):
+    try:
+        organizations_roles_data = await organization_manager_service.get_user_roles_in_organization(
+            auth_token=await token_handler.token,
+            organization_id=organization_id,
+            user_id=user_id
+        )
+        json_compatible_data = jsonable_encoder(organizations_roles_data)
+        return JSONResponse(content=json_compatible_data)
+    except (NotFoundException, BadRequestException) as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+    except (ServiceUnavailableException, BaseApiException):
+        raise HTTPException(
+            status_code=500,
+            detail="Service unavailable"
+        )
+
+@router.delete("/{organization_id}/members/{user_id}/roles")
+async def delete_users_roles_from_organization_member(
+        organization_id: str,
+        user_id: str,
+        organization_user_fields: UserRolesFields,
+        token_handler: AuthTokenManager = Depends(get_auth_manager_service),
+        organization_manager_service: OrganizationManager = Depends(get_organization_manager_service)
+):
+    try:
+        await organization_manager_service.delete_user_roles_in_organization(
+            auth_token=await token_handler.token,
+            organization_id=organization_id,
+            user_id=user_id,
+            members_roles_fields=organization_user_fields
+        )
+        return Response(status_code=204)
+    except (NotFoundException, BadRequestException) as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+    except (ServiceUnavailableException, BaseApiException):
+        raise HTTPException(
+            status_code=500,
+            detail="Service unavailable"
+        )
+
+
+@router.post("/{organization_id}/members/{user_id}/roles")
+async def assign_user_roles_in_organization(
+        organization_id: str,
+        user_id: str,
+        organization_user_fields: UserRolesFields,
+        token_handler: AuthTokenManager = Depends(get_auth_manager_service),
+        organization_manager_service: OrganizationManager = Depends(get_organization_manager_service)
+):
+    try:
+        await organization_manager_service.assign_user_roles_in_organization(
+            auth_token=await token_handler.token,
+            organization_id=organization_id,
+            user_id=user_id,
+            members_roles_fields=organization_user_fields
         )
         return Response(status_code=204)
     except (NotFoundException, BadRequestException) as e:

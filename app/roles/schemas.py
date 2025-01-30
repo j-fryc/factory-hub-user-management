@@ -21,5 +21,5 @@ class UpdateRoleFields(BaseModel):
     name: Optional[str] = Field(default=None, description="Name of the role")
 
 
-class OrganizationUserRolesFields(BaseModel):
+class UserRolesFields(BaseModel):
     roles: list[str] = Field(..., description="List of roles")
