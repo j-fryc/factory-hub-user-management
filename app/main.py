@@ -9,7 +9,10 @@ from app.config import get_settings
 from app.roles.role_manager import RoleManager
 from app.users.user_manager import UserManager
 from app.users.routers import router as user_router
+from app.organizations.routers import router as organization_router
+from app.organizations.organization_manager import OrganizationManager
 from app.roles.routers import router as role_router
+
 
 app = FastAPI()
 
@@ -27,6 +30,9 @@ async def startup():
     user_manager = UserManager(
         settings=settings,
     )
+    organization_manager = OrganizationManager(
+        settings=settings,
+    )
     role_manager = RoleManager(
         settings=settings,
     )
@@ -37,8 +43,11 @@ async def startup():
         )
     )
     app.state.user_manager = user_manager
+    app.state.organization_manager = organization_manager
     app.state.role_manager = role_manager
     app.state.token_handler = token_handler
 
 app.include_router(user_router)
+app.include_router(organization_router)
 app.include_router(role_router)
+
