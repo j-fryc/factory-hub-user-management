@@ -41,7 +41,7 @@ async def create_role(
         )
 
 
-@router.delete("/{user_id}")
+@router.delete("/{role_id}")
 async def delete_role(
         role_id: str,
         token_handler: AuthTokenManager = Depends(get_auth_manager_service),

@@ -42,7 +42,7 @@ class RoleManager:
             self,
             auth_token: str,
             role_id: str,
-            updating_fields: CreateRoleFields
+            updating_fields: UpdateRoleFields
     ) -> RoleFields:
         updated_role_data = await self._api_layer.make_request(
             method="PATCH",
@@ -55,7 +55,7 @@ class RoleManager:
     async def create_role(
             self,
             auth_token: str,
-            role_fields: UpdateRoleFields
+            role_fields: CreateRoleFields
     ) -> RoleFields:
         created_role_data = await self._api_layer.make_request(
             method="POST",
