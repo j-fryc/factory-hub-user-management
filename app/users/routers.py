@@ -144,7 +144,7 @@ async def get_user_roles(
 
 
 @router.delete("/{user_id}/roles")
-async def delete_users_roles_from_organization_member(
+async def delete_users_rolesr(
         user_id: str,
         organization_user_fields: UserRolesFields,
         token_handler: AuthTokenManager = Depends(get_auth_manager_service),
@@ -170,7 +170,7 @@ async def delete_users_roles_from_organization_member(
 
 
 @router.post("/{user_id}/roles")
-async def assign_user_roles_in_organization(
+async def assign_user_roles(
         user_id: str,
         organization_user_fields: UserRolesFields,
         token_handler: AuthTokenManager = Depends(get_auth_manager_service),
