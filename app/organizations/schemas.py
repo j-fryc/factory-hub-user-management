@@ -5,7 +5,7 @@ from fastapi import HTTPException, Query
 
 class SortParameters(BaseModel):
     sort_parameter: Optional[Literal['created_at', 'name', 'display_name']] = Query(None)
-    sort_order: Optional[Literal[0, 1]] = Query(None)
+    sort_order: Optional[Literal['1', '-1']] = Query(None)
 
     @field_validator('sort_order')
     def validate_sort_order(cls, v, info):
